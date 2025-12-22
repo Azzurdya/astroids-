@@ -12,6 +12,7 @@ class Player(CircleShape):
     ):
         super().__init__(x, y, 10)
         self.rotation = 0
+        self.shoot_cooldown = 0
 
     # in the Player class
     def triangle(self):
@@ -36,6 +37,10 @@ class Player(CircleShape):
         pygame.draw.polygon(screen, "white", shape, constants.LINE_WIDTH)
 
     def shoot(self):
+        if self.shoot_cooldown > 0:
+            print("shot passed")
+            return None
+        self.shoot_cooldown = constants.PLAYER_SHOOT_COOLDOWN_SECONDS
         shot = Shot(self.position, constants.SHOT_RADIUS)
         shot_vector = pygame.Vector2(0, 1)
         rotated_shot_vector = shot_vector.rotate(self.rotation)
@@ -43,6 +48,8 @@ class Player(CircleShape):
 
     def update(self, dt):
         keys = pygame.key.get_pressed()
+        self.shoot_cooldown -= dt
+        print(f"new shot {self.shoot_cooldown}")
 
         if keys[pygame.K_LEFT]:
             self.rotate(-dt)

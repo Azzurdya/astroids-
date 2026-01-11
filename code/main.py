@@ -8,21 +8,21 @@ from asteroidfield import AsteroidField
 from constants import LINE_WIDTH, SCREEN_HEIGHT, SCREEN_WIDTH
 from logger import log_event, log_state
 from player import Player
-from score_display import Score_tracker
 from shot import Shot
+from Text_display import *
 
 asteroids = pygame.sprite.Group()
 shots = pygame.sprite.Group()
-score = 0
 
 
 def main():
     print("Starting Asteroids with pygame version: 2.6.1")
+    print("all text from Jakob Fischer at www.pizzadude.dk")
     print("Screen width: 1280")
     print("Screen height: 720")
 
     pygame.init()
-    Game = True
+    Game = False
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
     dt = 0
     fps = pygame.time.Clock()
@@ -37,7 +37,20 @@ def main():
 
     player_ship = Player(x, y, 10)
     astroid_feld = AsteroidField()
-    score = Score_tracker(0, "arcadeclassic/ARCADECLASSIC.TTF")
+    score = Score_tracker(f"{0}", 40, "arcadeclassic/ARCADECLASSIC.TTF")
+    title = Titles("ASTROIDS", 100, "arcadeclassic/ARCADECLASSIC.TTF")
+
+    while Game == False:
+        screen.fill("black")
+        screen.blit(title.text, (400, 300))
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                return
+
+            if event.type == pygame.KEYDOWN:
+                Game = True
+
+        pygame.display.flip()
 
     while Game == True:
         log_state()
@@ -51,6 +64,7 @@ def main():
             if i.collides_with(player_ship) == True:
                 log_event("player_hit")
                 print("Game over!")
+                print(f"FINAL SCORE: {score.score}")
                 sys.exit()
             for s in shots:
                 if i.collides_with(s) == True:
@@ -61,8 +75,9 @@ def main():
 
         for object in drawable:
             object.draw(screen)
-        fps.tick(60)
         screen.blit(score.text, (10, 10))
+        fps.tick(60)
+
         pygame.display.flip()
 
 

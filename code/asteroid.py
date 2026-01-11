@@ -23,7 +23,6 @@ class Asteroid(CircleShape):
         log_event("asteroid_split")
         angle = random.uniform(20, 50)
         velocity_vector = self.velocity
-        print(velocity_vector)
         rotated_vector = velocity_vector.rotate(angle)
         rotated_vector2 = velocity_vector.rotate(-angle)
         new_radius = self.radius - constants.ASTEROID_MIN_RADIUS

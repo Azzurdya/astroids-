@@ -13,7 +13,6 @@ from Text_display import *
 
 asteroids = pygame.sprite.Group()
 shots = pygame.sprite.Group()
-score = 0
 
 
 def main():
@@ -38,8 +37,8 @@ def main():
 
     player_ship = Player(x, y, 10)
     astroid_feld = AsteroidField()
-    score = Score_tracker(0, "arcadeclassic/ARCADECLASSIC.TTF")
-    title = Static_Text("ASTROIDS", 100, "arcadeclassic/ARCADECLASSIC.TTF")
+    score = Score_tracker(f"{0}", 40, "arcadeclassic/ARCADECLASSIC.TTF")
+    title = Titles("ASTROIDS", 100, "arcadeclassic/ARCADECLASSIC.TTF")
 
     while Game == False:
         screen.fill("black")
@@ -76,8 +75,9 @@ def main():
 
         for object in drawable:
             object.draw(screen)
-        fps.tick(60)
         screen.blit(score.text, (10, 10))
+        fps.tick(60)
+
         pygame.display.flip()
 
 

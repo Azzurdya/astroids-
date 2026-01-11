@@ -65,6 +65,7 @@ def main():
             if i.collides_with(player_ship) == True:
                 log_event("player_hit")
                 print("Game over!")
+                print(f"FINAL SCORE: {score.score}")
                 sys.exit()
             for s in shots:
                 if i.collides_with(s) == True:

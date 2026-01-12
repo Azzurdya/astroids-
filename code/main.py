@@ -22,7 +22,8 @@ def main():
     print("Screen height: 720")
 
     pygame.init()
-    Game = False
+    Game = True
+    game_state = 1
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
     dt = 0
     fps = pygame.time.Clock()
@@ -30,55 +31,72 @@ def main():
     y = SCREEN_HEIGHT / 2
     updatable = pygame.sprite.Group()
     drawable = pygame.sprite.Group()
+    resetable = pygame.sprite.Group()
     AsteroidField.containers = updatable
-    Shot.containers = (shots, updatable, drawable)
-    Asteroid.containers = (asteroids, updatable, drawable)
-    Player.containers = (updatable, drawable)
-
+    Shot.containers = (shots, updatable, drawable, resetable)
+    Asteroid.containers = (asteroids, updatable, drawable, resetable)
+    Player.containers = (updatable, drawable, resetable)
+    Score_tracker.containers = resetable
     player_ship = Player(x, y, 10)
     astroid_feld = AsteroidField()
-    score = Score_tracker(f"{0}", 40, "arcadeclassic/ARCADECLASSIC.TTF")
+    score = Score_tracker(0, 40, "arcadeclassic/ARCADECLASSIC.TTF")
     title = Titles("ASTROIDS", 100, "arcadeclassic/ARCADECLASSIC.TTF")
-
-    while Game == False:
-        screen.fill("black")
-        screen.blit(title.text, (400, 300))
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                return
-
-            if event.type == pygame.KEYDOWN:
-                Game = True
-
-        pygame.display.flip()
-
+    screen.fill("black")
+    screen.blit(title.text, (400, 300))
     while Game == True:
-        log_state()
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                return
-        dt = fps.tick(60) / 1000
-        screen.fill("black")
-        updatable.update(dt)
-        for i in asteroids:
-            if i.collides_with(player_ship) == True:
-                log_event("player_hit")
-                print("Game over!")
-                print(f"FINAL SCORE: {score.score}")
-                sys.exit()
-            for s in shots:
-                if i.collides_with(s) == True:
-                    log_event("asteroid_shot")
-                    score.update(i)
-                    s.kill()
-                    i.split()
+        while game_state == 1:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    return
 
-        for object in drawable:
-            object.draw(screen)
-        screen.blit(score.text, (10, 10))
-        fps.tick(60)
+                if event.type == pygame.KEYDOWN:
+                    for i in resetable:
+                        i.kill()
+                    score = Score_tracker(0, 40, "arcadeclassic/ARCADECLASSIC.TTF")
+                    player_ship = Player(x, y, 10)
+                    game_state = 2
 
-        pygame.display.flip()
+            fps.tick(60)
+            pygame.display.flip()
+
+        while game_state == 2:
+            log_state()
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    return
+            dt = fps.tick(60) / 1000
+            screen.fill("black")
+            updatable.update(dt)
+            for i in asteroids:
+                if i.collides_with(player_ship) == True:
+                    title.update("GAME OVER!")
+                    game_state = 3
+                for s in shots:
+                    if i.collides_with(s) == True:
+                        log_event("asteroid_shot")
+                        score.update(i)
+                        s.kill()
+                        i.split()
+
+            for object in drawable:
+                object.draw(screen)
+            screen.blit(score.text, (10, 10))
+            fps.tick(60)
+
+            pygame.display.flip()
+
+        while game_state == 3:
+            screen.fill("black")
+            screen.blit(title.text, (400, 300))
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    return
+
+                if event.type == pygame.KEYDOWN:
+                    game_state = 1
+
+            fps.tick(60)
+            pygame.display.flip()
 
 
 if __name__ == "__main__":
